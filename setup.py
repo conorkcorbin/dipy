@@ -75,12 +75,16 @@ for modulename, other_sources, language in (
     ('dipy.tracking.local.interpolation', [], 'c'),
     ('dipy.tracking.vox2track', [], 'c'),
     ('dipy.tracking.propspeed', [], 'c'),
+    ('dipy.tracking.fbcmeasures', [], 'c'),
     ('dipy.segment.cythonutils', [], 'c'),
     ('dipy.segment.featurespeed', [], 'c'),
     ('dipy.segment.metricspeed', [], 'c'),
     ('dipy.segment.clusteringspeed', [], 'c'),
     ('dipy.segment.clustering_algorithms', [], 'c'),
+    ('dipy.segment.mrf', [], 'c'),
     ('dipy.denoise.denspeed', [], 'c'),
+    ('dipy.denoise.pca_noise_estimate', [], 'c'),
+    ('dipy.denoise.nlmeans_block', [], 'c'),
     ('dipy.denoise.enhancement_kernel', [], 'c'),
     ('dipy.denoise.shift_twist_convolution', [], 'c'),
     ('dipy.align.vector_fields', [], 'c'),
@@ -89,7 +93,8 @@ for modulename, other_sources, language in (
     ('dipy.align.crosscorr', [], 'c'),
     ('dipy.align.bundlemin', [], 'c'),
     ('dipy.align.transforms', [], 'c'),
-    ('dipy.align.parzenhist', [], 'c')):
+    ('dipy.align.parzenhist', [], 'c'),
+    ('dipy.utils.omp', [], 'c')):
 
     pyx_src = pjoin(*modulename.split('.')) + '.pyx'
     EXTS.append(Extension(modulename, [pyx_src] + other_sources,
@@ -100,8 +105,8 @@ for modulename, other_sources, language in (
 # Do our own build and install time dependency checking. setup.py gets called in
 # many different ways, and may be called just to collect information (egg_info).
 # We need to set up tripwires to raise errors when actually doing things, like
-# building, rather than unconditionally in the setup.py import or exec
-# We may make tripwire versions of build_ext, build_py, install
+# building, rather than unconditionally in the setup.py import or exec We may
+# make tripwire versions of build_ext, build_py, install
 need_cython = True
 pybuilder = get_comrec_build('dipy')
 # Cython is a dependency for building extensions, iff we don't have stamped
@@ -122,7 +127,6 @@ extbuilder = add_flag_checking(
 # Use ext builder to add np.get_include() at build time, not during setup.py
 # execution.
 extbuilder = make_np_ext_builder(extbuilder)
-
 if need_cython:
     SetupDependency('Cython', info.CYTHON_MIN_VERSION,
                     req_type='install_requires',
@@ -211,16 +215,13 @@ def main(**extra_args):
                           [pjoin('data', 'files', '*')
                           ]},
           data_files=[('share/doc/dipy/examples',
-                       glob(pjoin('doc','examples','*.py')))],
-          scripts      = [pjoin('bin', 'dipy_peak_extraction'),
-                          pjoin('bin', 'dipy_fit_tensor'),
-                          pjoin('bin', 'dipy_sh_estimate'),
-                          pjoin('bin', 'dipy_quickbundles')],
+                       glob(pjoin('doc', 'examples','*.py')))],
+          scripts = glob(pjoin('bin', 'dipy_*')),
           cmdclass = cmdclass,
           **extra_args
         )
 
-
+    
 #simple way to test what setup will do
 #python setup.py install --prefix=/tmp
 if __name__ == "__main__":
