@@ -3,22 +3,22 @@
 Gradients and Spheres
 =====================
 
-This example shows how you can create GradientTables and Sphere objects using 
-Dipy.
+This example shows how you can create gradient tables and sphere objects using
+dipy_.
 
-Usually, as we saw in :ref:`example_quick_start`, you load your b-values and 
-b-vectors from disk and then you can create your own GradientTable. But,
-this time lets say that you are an MR physicist and you want to desing a new
+Usually, as we saw in :ref:`example_quick_start`, you load your b-values and
+b-vectors from disk and then you can create your own gradient table. But
+this time let's say that you are an MR physicist and you want to design a new
 gradient scheme or you are a scientist who wants to simulate many different
-gradient schemes. 
+gradient schemes.
 
-Now let's assume that you are interested in creating a multi-shell 
-acquisition with 2-shells, one at b=1000 and one at b=2500. For both shells
-let's say that we want a specific number of gradients (64) and we want to have 
-the points on the sphere evenly distributed. 
+Now let's assume that you are interested in creating a multi-shell
+acquisition with 2-shells, one at b=1000 $s/mm^2$ and one at b=2500 $s/mm^2$.
+For both shells let's say that we want a specific number of gradients (64) and
+we want to have the points on the sphere evenly distributed.
 
 This is possible using the ``disperse_charges`` which is an implementation of
-electrostatic repulsion [1]_.
+electrostatic repulsion [Jones1999]_.
 """
 
 import numpy as np
@@ -35,14 +35,14 @@ phi = 2 * np.pi * np.random.rand(n_pts)
 hsph_initial = HemiSphere(theta=theta, phi=phi)
 
 """
-Next, we call `disperse_charges` which will iteratively move the points so that
+Next, we call ``disperse_charges`` which will iteratively move the points so that
 the electrostatic potential energy is minimized.
 """
 
 hsph_updated, potential = disperse_charges(hsph_initial, 5000)
 
 """
-In ``hsph_updated` we have the updated HemiSphere with the points nicely 
+In ``hsph_updated`` we have the updated ``HemiSphere`` with the points nicely
 distributed on the hemisphere. Let's visualize them.
 """
 
@@ -59,7 +59,7 @@ fvtk.record(ren, out_path='initial_vs_updated.png', size=(300, 300))
 .. figure:: initial_vs_updated.png
    :align: center
 
-   **Example of electrostatic repulsion of red points which become green points**.
+   Example of electrostatic repulsion of red points which become green points.
 
 We can also create a sphere from the hemisphere and show it in the following way.
 """
@@ -76,9 +76,9 @@ fvtk.record(ren, out_path='full_sphere.png', size=(300, 300))
 .. figure:: full_sphere.png
    :align: center
 
-   **Full sphere**
+   Full sphere.
 
-It is time to create the Gradients. For this reason we will need to use the
+It is time to create the Gradients. For this purpose we will use the
 function ``gradient_table`` and fill it with the ``hsph_updated`` vectors that 
 we created above.
 """
@@ -89,15 +89,16 @@ vertices = hsph_updated.vertices
 values = np.ones(vertices.shape[0])
 
 """
-We need to stacks of ``vertices`` one for every shell and we need two sets
-of b-values one at 1000 and one at 2500 as we discussed previously.
+We need two stacks of ``vertices``, one for every shell, and we need two sets
+of b-values, one at 1000 $s/mm^2$, and one at 2500 $s/mm^2$, as we discussed
+previously.
 """
 
 bvecs = np.vstack((vertices, vertices))
 bvals = np.hstack((1000 * values, 2500 * values))
 
 """
-We can also add some b0s. Let's add one in the beginning and one at the end.
+We can also add some b0s. Let's add one at the beginning and one at the end.
 """
 
 bvecs = np.insert(bvecs, (0, bvecs.shape[0]), np.array([0, 0, 0]), axis=0)
@@ -149,7 +150,7 @@ print(bvecs)
      [-0.48938584 -0.43780086  0.75420946]
      [ 0.          0.          0.        ]]
 
-Both b-values and b-vectors look correct. Let's now create the 
+Both b-values and b-vectors look correct. Let's now create the
 ``GradientTable``.
 """
 
@@ -158,8 +159,8 @@ gtab = gradient_table(bvals, bvecs)
 fvtk.rm_all(ren)
 
 """
-We can also visualize the gradients. Let's color with blue the first shell and
-with cyan the second shell.
+We can also visualize the gradients. Let's color the first shell blue and
+the second shell cyan.
 """
 
 colors_b1000 = fvtk.colors.blue * np.ones(vertices.shape)
@@ -177,10 +178,15 @@ fvtk.record(ren, out_path='gradients.png', size=(300, 300))
 .. figure:: gradients.png
    :align: center
 
-   **Diffusion Gradients**
+   Diffusion gradients.
 
-.. [1] Jones, DK. et al. Optimal strategies for measuring diffusion in 
-       anisotropic systems by magnetic resonance imaging, Magnetic Resonance
-       in Medicine, vol 42, no 3, 515-525, 1999. 
+References
+----------
+
+.. [Jones1999] Jones, DK. et al. Optimal strategies for measuring diffusion in
+   anisotropic systems by magnetic resonance imaging, Magnetic Resonance in
+   Medicine, vol 42, no 3, 515-525, 1999.
+
+.. include:: ../links_names.inc
+
 """
-

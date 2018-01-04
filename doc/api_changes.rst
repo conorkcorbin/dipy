@@ -5,6 +5,16 @@ API changes
 Here we provide information about functions or classes that have been removed,
 renamed or are deprecated (not recommended) during different release circles.
 
+Dipy 0.13 Changes
+-----------------
+
+No major API changes.
+
+**Notes**
+
+``dipy.viz.fvtk`` module will be deprecated on release 0.14. Use ``dipy.viz.ui`` instead.
+``dipy.io.trackvis`` module will be deprecated on release 0.14. Use ``dipy.io.streamline`` instead.
+
 Dipy 0.12 Changes
 -----------------
 **Dropped support for Python 2.6***
@@ -27,8 +37,17 @@ the probability mass function (pmf) when selecting the tracking direction.
 Default of DKI model fitting was changed from "OLS" to "WLS".
 
 The default max_kurtosis of the functions axial_kurtosis, mean_kurtosis,
-radial_kurotis was changed from 3 to 10.  
+radial_kurotis was changed from 3 to 10.
 
+**Visualization**
+
+Prefer using the UI elements in ``dipy.viz.ui`` rather than
+``dipy.viz.widgets``.
+
+**IO**
+
+Use the module ``nibabel.streamlines`` for saving trk files and not
+``nibabel.trackvis``. Requires upgrading to nibabel 2+.
 
 Dipy 0.10 Changes
 -----------------
